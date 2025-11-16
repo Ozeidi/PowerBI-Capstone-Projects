@@ -1,4 +1,4 @@
-```markdown
+
 # Power BI Capstone Projects – Corporate Finance & Retail
 
 This repository contains two end-to-end **Power BI capstone projects** with ready-made datasets, designed for hands-on training:
@@ -249,4 +249,4 @@ You can keep the Promotion relationship active or experiment with inactive relat
    - Self-study practice  
 
 Feel free to fork and extend (add more years, more channels, additional facts like Targets, Inventory, etc.) if you want to turn this into a broader BI demo environment.
-```
+
