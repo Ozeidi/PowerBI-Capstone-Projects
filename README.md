@@ -251,3 +251,157 @@ This forms a star schema centered on `Fact_Sales`. You can keep the promotion re
    - Load all Fact + Dimension tables and optionally the `Data_Dictionary`.  
    - Build the relationships as described under each project.  
 4. Build your own measures and visuals on top of the models for training, workshops, or portfolio demos.
+
+
+## Project 3 – HR People & Payroll Dashboard
+
+### 1. Scenario
+
+Atlas Group’s HR team is under pressure to provide a clear, consistent view of its workforce and people costs. Leadership keeps asking:
+
+1. How many people do we have, and where?  
+2. What are we paying them (by department, grade, and location)?  
+3. How are headcount and payroll evolving over time (joins, leavers, and overall cost trends)?
+
+Right now, HR maintains:
+
+- An employee master file  
+- Monthly payroll exports from the HR system  
+- A separate joiner/leaver list  
+
+There is no integrated dashboard, and Finance and HR often disagree on the figures. Senior leaders do not have a single, trusted source of people and cost information.
+
+You are given a consolidated dataset that brings together employee, payroll, and event data for **January 2024 to December 2025**. Your task is to build an **HR People & Payroll Dashboard** in Power BI that supports:
+
+- Headcount and FTE tracking  
+- Joiner/leaver and attrition analysis  
+- Payroll cost breakdown by department, grade, location, and pay component  
+- (Optionally) per-employee cost views
+
+---
+
+### 2. Dataset
+
+**File:** `HR_Payroll_Dashboard_Training_Data.xlsx`  
+**Period:** Monthly from **Jan 2024 to Dec 2025**  
+**Employees:** 400 employees with realistic departments, jobs, grades, locations, hire dates, and some terminations.
+
+The workbook contains:
+
+- `Dim_Date` – Payroll period date dimension (monthly).  
+- `Dim_Department` – Departments such as Human Resources, Finance & Controlling, IT, Operations, Sales & Marketing, Customer Service.  
+- `Dim_Location` – Head Office and Regional Offices (North, South).  
+- `Dim_Job` – Job titles and job families per department.  
+- `Dim_PayComponent` – Salary, allowances, overtime, bonus, pension, etc.  
+- `Dim_Employee` – Employee master data.  
+- `Fact_Payroll` – Monthly payroll by employee and pay component.  
+- `Fact_Employee_Events` – Hire and termination events.  
+- `Data_Dictionary` – Column-level descriptions for all tables.
+
+---
+
+### 3. Fact Tables
+
+#### 3.1 `Fact_Payroll`
+
+Grain: **One row per Employee–Month–PayComponent**  
+Each record represents the amount paid or charged for a specific pay component for a given employee in a given month.
+
+Key columns:
+
+- `PayrollID` – Unique identifier for each payroll line.  
+- `EmployeeID` – Employee whose pay is recorded.  
+- `PayDate` – First day of the month representing the payroll period.  
+- `Year` – Payroll year.  
+- `Month` – Payroll month.  
+- `PayComponentID` – Pay component (Base Salary, Housing Allowance, Transport Allowance, Overtime Pay, Performance Bonus, Other Allowance, Employee Pension Contribution, Employer Pension Contribution).  
+- `Amount_OMR` – Amount in OMR for that component in the given month.
+
+#### 3.2 `Fact_Employee_Events`
+
+Grain: **One row per Employee–Event**  
+Each record represents a **Hire** or **Termination** event for an employee.
+
+Key columns:
+
+- `EventID` – Unique identifier for each employee event.  
+- `EmployeeID` – Employee whose event is recorded.  
+- `EventDate` – Date of the event (Hire or Termination).  
+- `EventType` – Type of event (`Hire` / `Termination`).
+
+---
+
+### 4. Dimension Tables
+
+#### 4.1 `Dim_Date`
+
+- `Date` – First day of the month.  
+- `Year` – Calendar year.  
+- `Month` – Month number (`1–12`).  
+- `MonthName` – Short month name (`Jan`, `Feb`, etc.).  
+- `YearMonth` – Formatted year-month label (e.g. `2024-01`).
+
+#### 4.2 `Dim_Department`
+
+- `DepartmentID` – Unique identifier for the department.  
+- `DepartmentName` – Department name (e.g. Human Resources, Finance & Controlling).  
+- `FunctionGroup` – Higher-level grouping of departments (Corporate Services, Core Operations, Commercial).
+
+#### 4.3 `Dim_Location`
+
+- `LocationID` – Unique identifier for the location.  
+- `LocationName` – Name of the office location (Head Office, Regional Office North, Regional Office South).  
+- `Country` – Country of the location (e.g. Oman).  
+- `City` – City of the location (e.g. Muscat, Sohar, Salalah).
+
+#### 4.4 `Dim_Job`
+
+- `JobID` – Unique job identifier.  
+- `JobTitle` – Official job title.  
+- `JobFamily` – Job family/group (e.g. HR Generalist, Finance, IT Operations).  
+- `DepartmentID` – Department that owns the job.
+
+#### 4.5 `Dim_PayComponent`
+
+- `PayComponentID` – Unique identifier for the pay component.  
+- `PayComponentName` – Name of the salary, allowance, or contribution component.  
+- `ComponentType` – Classification (`Earning`, `Deduction`, `Employer Charge`).
+
+#### 4.6 `Dim_Employee`
+
+- `EmployeeID` – Unique employee identifier (`E0001–E0400`).  
+- `FullName` – Employee full name.  
+- `FirstName` – First name.  
+- `LastName` – Last name.  
+- `Gender` – Gender (`M` / `F`).  
+- `DateOfBirth` – Date of birth (roughly 1970–2000).  
+- `HireDate` – Date the employee joined the company (2015–2024).  
+- `TerminationDate` – Date the employee left the company, if applicable (2024–2025).  
+- `EmploymentStatus` – Current status (`Active` / `Terminated`).  
+- `DepartmentID` – Current department.  
+- `JobID` – Current job.  
+- `LocationID` – Primary location.  
+- `Grade` – Internal grade/band (`G04–G10`).  
+- `BaseSalary_OMR` – Base monthly salary in OMR.
+
+---
+
+### 5. Recommended Data Model (Power BI)
+
+Suggested relationships:
+
+- `Fact_Payroll[PayDate]` → `Dim_Date[Date]`  
+- `Fact_Payroll[EmployeeID]` → `Dim_Employee[EmployeeID]`  
+- `Fact_Payroll[PayComponentID]` → `Dim_PayComponent[PayComponentID]`  
+
+- `Fact_Employee_Events[EventDate]` → `Dim_Date[Date]`  
+- `Fact_Employee_Events[EmployeeID]` → `Dim_Employee[EmployeeID]`  
+
+Employee master joins to org dimensions via:
+
+- `Dim_Employee[DepartmentID]` → `Dim_Department[DepartmentID]`  
+- `Dim_Employee[JobID]` → `Dim_Job[JobID]`  
+- `Dim_Employee[LocationID]` → `Dim_Location[LocationID]`  
+
+This gives you a people hub (`Dim_Employee`) connected to payroll (`Fact_Payroll`) and events (`Fact_Employee_Events`), with time, department, job, and location as supporting dimensions.
+
