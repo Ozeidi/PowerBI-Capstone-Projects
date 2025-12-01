@@ -283,8 +283,8 @@ You are given a consolidated dataset that brings together employee, payroll, and
 ### 2. Dataset
 
 **File:** `HR_Payroll_Dashboard_Training_Data.xlsx`  
-**Period:** Monthly from **Jan 2024 to Dec 2025**  
-**Employees:** 400 employees with realistic departments, jobs, grades, locations, hire dates, and some terminations.
+**Period:** Monthly **2025**  
+**Employees:** 3000 employees with realistic departments, jobs, grades, locations, hire dates, and some terminations.
 
 The workbook contains:
 
